@@ -214,6 +214,6 @@ Parts like **INA2227**, **INA4230**, **INA4235** may expose **multiple** channel
 - [ ] **I²C**/**SPI** pins match **`beginI2c`** / **`InaBridge229Spi`** arguments.
 - [ ] **Pull-ups** on **SDA**/**SCL** for I²C.
 - [ ] **115200** baud on host for **`Serial`**.
-- [ ] **Chip name string** in code matches **INA Monitor** selection.
+- [ ] **Chip name string** in code matches **NiusRobotLab_INA_monitor** selection.
 
 For **API** and **serial commands**, see **[USAGE.md](./USAGE.md)**.

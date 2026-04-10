@@ -1,6 +1,6 @@
 # INA Series Sensor — Usage Guide
 
-This guide describes how to install the library, initialize each bridge class, interpret JSON Lines output, and use the INA Monitor host application. It assumes **Arduino IDE 2.x** or **Arduino CLI** with a supported core (ESP32, Arduino-Pico for RP2040, AVR, etc.).
+This guide describes how to install the library, initialize each bridge class, interpret JSON Lines output, and use the **NiusRobotLab_INA_monitor** host application (INA Monitor UI). It assumes **Arduino IDE 2.x** or **Arduino CLI** with a supported core (ESP32, Arduino-Pico for RP2040, AVR, etc.).
 
 ---
 
@@ -12,7 +12,7 @@ This guide describes how to install the library, initialize each bridge class, i
 4. [Lifecycle: `begin`, `tick`, streaming](#4-lifecycle-begin-tick-streaming)
 5. [Serial output (JSON Lines)](#5-serial-output-json-lines)
 6. [Host commands](#6-host-commands)
-7. [INA Monitor desktop app](#7-ina-monitor-desktop-app)
+7. [NiusRobotLab_INA_monitor desktop app](#7-niusrobotlab_ina_monitor-desktop-app)
 8. [Calibration: `IMAX` and `RSHUNT`](#8-calibration-imax-and-rshunt)
 9. [Advanced: protocol helpers](#9-advanced-protocol-helpers)
 10. [Troubleshooting](#10-troubleshooting)
@@ -41,7 +41,7 @@ This pulls in all bridge classes plus **`InaJsonlProtocol.h`**, **`InaWireCompat
 
 Every example follows the same pattern:
 
-1. **`Serial.begin(115200)`** — JSON Lines use **115200 baud** by default (INA Monitor expects this unless you change both sides).
+1. **`Serial.begin(115200)`** — JSON Lines use **115200 baud** by default (**NiusRobotLab_INA_monitor** expects this unless you change both sides).
 2. A short **`delay(100)`** after boot so USB CDC can enumerate before the first `INFO` line (optional but common).
 3. **`beginI2c(...)`**, **`beginSpi()`**, or **`begin()`** on the bridge object.
 4. **`tick()`** in **`loop()`** — handles incoming serial **commands** and emits **samples** when streaming is enabled.
@@ -104,7 +104,7 @@ void loop() {
 
 ## 3. Bridge classes
 
-Choose the class that matches your **device register map** and **bus**. The **first string argument** is the **`chip` field** in JSON and must match the **INA Monitor** chip name (e.g. `"INA237-Q1"`, not a loose description).
+Choose the class that matches your **device register map** and **bus**. The **first string argument** is the **`chip` field** in JSON and must match the **NiusRobotLab_INA_monitor** chip name (e.g. `"INA237-Q1"`, not a loose description).
 
 | Class | Typical parts | Bus | JSON notes |
 |--------|----------------|-----|------------|
@@ -143,7 +143,7 @@ Choose the class that matches your **device register map** and **bus**. The **fi
    - Reads a **line** from **`Serial`** if present and parses **commands** (`PING`, `START`, `STOP`, etc.).
    - If streaming is **on** and the sample interval has elapsed, emits one **measurement** JSON object.
 
-3. **Streaming is off** until the host sends **`START`** (or you add code to enable it — not done in stock examples). INA Monitor sends **`START`** when you begin a capture session.
+3. **Streaming is off** until the host sends **`START`** (or you add code to enable it — not done in stock examples). **NiusRobotLab_INA_monitor** sends **`START`** when you begin a capture session.
 
 4. Default **nominal sample rate** is **10 Hz**, adjustable with **`SR <hz>`** (clamped **1–200** Hz in firmware).
 
@@ -164,7 +164,7 @@ Typical fields:
 
 | Field | Meaning |
 |-------|---------|
-| **`chip`** | Must match INA Monitor selection. |
+| **`chip`** | Must match **NiusRobotLab_INA_monitor** selection. |
 | **`addr`** | I²C address string (e.g. **`"0x40"`**) or **`"SPI"`**. |
 | **`seq`** | Incrementing sequence number. |
 | **`t_ms`** | **`millis()`** on the MCU. |
@@ -175,7 +175,7 @@ Typical fields:
 
 ### INA3221 (multi-channel)
 
-Adds **`channels`**: array of objects with **`bus_V`**, **`current_A`**, **`power_W`** per channel. An aggregate **`bus_V`** may appear for display averaging — keep field names unchanged for INA Monitor.
+Adds **`channels`**: array of objects with **`bus_V`**, **`current_A`**, **`power_W`** per channel. An aggregate **`bus_V`** may appear for display averaging — keep field names unchanged for **NiusRobotLab_INA_monitor**.
 
 ### Control / status lines
 
@@ -185,7 +185,7 @@ Adds **`channels`**: array of objects with **`bus_V`**, **`current_A`**, **`powe
 | **`ACK`** | Confirms **`START`**, **`STOP`**, **`SR`**, **`IMAX`**, **`RSHUNT`**. |
 | **`ERR`** | Unknown command or parse issue; may include **`line`** echo. |
 
-Do **not** rename measurement fields if you need **INA Monitor** compatibility.
+Do **not** rename measurement fields if you need **NiusRobotLab_INA_monitor** compatibility.
 
 ---
 
@@ -206,10 +206,12 @@ Send **ASCII lines** terminated by **newline** (`\n`). Matching is case-insensit
 
 ---
 
-## 7. INA Monitor desktop app
+## 7. NiusRobotLab_INA_monitor desktop app
+
+**NiusRobotLab_INA_monitor** is the desktop application that talks to this firmware (the window may show **INA Monitor** as the product name). A public **GitHub** repository for the application is **not published yet**; when it is, the project **`README.md`** and this doc will add the link.
 
 1. Connect the board via **USB** (virtual COM / CDC).
-2. Open **INA Monitor**, choose the **Serial** data source and the **COM port** at **115200** baud.
+2. Open **NiusRobotLab_INA_monitor**, choose the **Serial** data source and the **COM port** at **115200** baud.
 3. Select the **same chip name** as in your sketch’s **`chipJson`** string (e.g. **`INA238-Q1`**).
 4. Start monitoring — the app sends **`START`**, **`STOP`**, **`SR`**, and calibration commands as designed.
 
@@ -232,7 +234,7 @@ Always use a shunt rated for your application; verify **bus voltage** and **comm
 
 ## 9. Advanced: protocol helpers
 
-For a **custom** bridge that must stay compatible with INA Monitor:
+For a **custom** bridge that must stay compatible with **NiusRobotLab_INA_monitor**:
 
 - Include **`InaJsonlProtocol.h`** and use **`InaJsonl::pong()`**, **`ackStart()`**, **`ackSr()`**, etc., so **ACK**/**ERR** lines stay identical.
 - Use **`InaWireBeginMapped()`** / **`InaSpiBeginMapped()`** from **`InaWireCompat.h`** / **`InaSpiCompat.h`** for portable **`Wire`**/**`SPI`** setup.
@@ -248,6 +250,6 @@ For a **custom** bridge that must stay compatible with INA Monitor:
 | **`ERR` / MFG ID mismatch (228/229)** | Wrong chip or bad bus; verify **address**, **wiring**, **3V3** to INA. |
 | Garbage on serial | **Baud mismatch**; use **115200** on both sides. |
 | Wrong current scale | **`IMAX`**, **`RSHUNT`**, and physical **shunt value** must match. |
-| INA Monitor empty graph | **Chip name** in JSON must match UI; **JSON** must be one object per line. |
+| **NiusRobotLab_INA_monitor** empty graph | **Chip name** in JSON must match UI; **JSON** must be one object per line. |
 
 For **pin mapping** and **per-board** connections, see **[WIRING.md](./WIRING.md)**.
