@@ -7,7 +7,7 @@
 **Texas Instruments INA current & power monitors — production-ready Arduino library**  
 **JSON Lines** on USB serial · Built for **NiusRobotLab_INA_monitor** (same protocol as the **INA Monitor** UI) · Plug-in examples per chip id
 
-**[GitHub repository](https://github.com/NiusRobotLab/INA_series_sensor)**  ·  Arduino Library Manager uses this URL (`library.properties` `url`) to track releases.
+**[GitHub repository](https://github.com/dunknowcoding/INA_series_sensor)**  ·  Arduino Library Manager uses this URL (`library.properties` `url`) to track releases.
 
 [Why this library](#why-this-library) · [Architecture](#architecture) · [MCU support](#mcu-compatibility) · [Quick start](#quick-start) · [Protocol](#serial-protocol-json-lines)
 
@@ -289,4 +289,4 @@ node scripts/wire-examples-library.mjs
 
 **NiusRobotLab** — see `library.properties`.
 
-INA Series Sensor · Arduino Library 1.5 · [GitHub](https://github.com/NiusRobotLab/INA_series_sensor) · JSONL for NiusRobotLab_INA_monitor
+INA Series Sensor · Arduino Library 1.5 · [GitHub](https://github.com/dunknowcoding/INA_series_sensor) · JSONL for NiusRobotLab_INA_monitor
