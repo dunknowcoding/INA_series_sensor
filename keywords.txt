@@ -1,0 +1,29 @@
+#######################################
+# Syntax Coloring Map For INA Series Sensor
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+InaBridge219	KEYWORD1
+InaBridge226	KEYWORD1
+InaBridge228	KEYWORD1
+InaBridge3221	KEYWORD1
+InaBridge229Spi	KEYWORD1
+InaBridgeCh1	KEYWORD1
+InaBridgeUnknown	KEYWORD1
+InaJsonl	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+beginI2c	KEYWORD2
+beginSpi	KEYWORD2
+tick	KEYWORD2
+sampleIntervalMs	KEYWORD2
+InaWireBeginMapped	KEYWORD2
+InaSpiBeginMapped	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
