@@ -48,5 +48,5 @@
   <text x="76" y="188" fill="#88bbff" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="500">JSON Lines - INA Monitor - Arduino / ESP32 / RP2040</text>
 
   <rect x="76" y="204" width="112" height="32" rx="16" fill="#0066FF" fill-opacity="0.22" stroke="#3399FF" stroke-width="1"/>
-  <text x="132" y="225" fill="#c8e0ff" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="600" text-anchor="middle">v0.2.1</text>
+  <text x="132" y="225" fill="#c8e0ff" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="600" text-anchor="middle">v0.2.5</text>
 </svg>

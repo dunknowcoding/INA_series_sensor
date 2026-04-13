@@ -22,7 +22,7 @@ private:
   bool _streaming = false;
   bool _adcRangeHigh = false;
   uint32_t _seq = 0;
-  uint32_t _lastMs = 0;
+  uint32_t _lastSampleUs = 0;
   SPISettings _spiSettings;
 
   uint32_t spiReadRegister(uint8_t reg, uint8_t nbytes);

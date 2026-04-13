@@ -14,19 +14,17 @@ InaBridge219::InaBridge219(const char* chipJson, uint8_t i2cAddr) : _chip(chipJs
 
 void InaBridge219::beginI2c(int pinSda, int pinScl, uint32_t i2cHz) {
   InaWireBeginMapped(pinSda, pinScl, i2cHz);
+  if (!InaWireProbeAddr(_addr)) {
+    InaWireReportProbeFailure(_addr);
+  }
   applyDefaultConfig();
   applyCalibration();
   printInfo();
+  Serial.flush();
 }
 
 uint16_t InaBridge219::readU16(uint8_t reg) {
-  Wire.beginTransmission(_addr);
-  Wire.write(reg);
-  if (Wire.endTransmission(false) != 0) return 0;
-  Wire.requestFrom((int)_addr, 2);
-  uint16_t hi = Wire.read();
-  uint16_t lo = Wire.read();
-  return (hi << 8) | lo;
+  return InaWireReadU16Reg(_addr, reg);
 }
 
 int16_t InaBridge219::readS16(uint8_t reg) {
@@ -60,8 +58,10 @@ void InaBridge219::printInfo() {
   snprintf(addrStr, sizeof(addrStr), "0x%02X", _addr);
   char buf[220];
   snprintf(buf, sizeof(buf),
-                "{\"v\":1,\"type\":\"INFO\",\"msg\":\"%s bridge ready\",\"author\":\"NiusRobotLab\",\"addr\":\"%s\"}",
-                _chip, addrStr);
+           "{\"v\":1,\"type\":\"INFO\",\"msg\":\"%s bridge ready. No JSON samples until START (optional SR <Hz> "
+           "first).\",\"author\":\"NiusRobotLab\",\"chip\":\"%s\","
+           "\"addr\":\"%s\"}",
+           _chip, _chip, addrStr);
   Serial.println(buf);
 }
 
@@ -95,7 +95,7 @@ void InaBridge219::sampleOnce() {
 
 void InaBridge219::handleCommand(const String& line) {
   String l = line;
-  l.trim();
+  InaJsonl::normalizeCmd(l);
   if (l.length() == 0) return;
   if (l.equalsIgnoreCase("PING")) {
     InaJsonl::pong();
@@ -112,10 +112,7 @@ void InaBridge219::handleCommand(const String& line) {
     return;
   }
   if (l.startsWith("SR ")) {
-    int hz = l.substring(3).toInt();
-    if (hz < 1) hz = 1;
-    if (hz > 200) hz = 200;
-    _sampleHz = hz;
+    _sampleHz = InaJsonl::clampStreamRateI2c(l.substring(3).toInt());
     InaJsonl::ackSr(_sampleHz);
     return;
   }
@@ -142,9 +139,10 @@ void InaBridge219::tick() {
   if (Serial.available()) {
     handleCommand(Serial.readStringUntil('\n'));
   }
-  const uint32_t now = millis();
+  if (!_streaming) return;
   const uint32_t interval_ms = InaJsonl::sampleIntervalMs(_sampleHz);
-  if (_streaming && (now - _lastMs >= interval_ms)) {
+  const uint32_t now = millis();
+  if ((uint32_t)(now - _lastMs) >= interval_ms) {
     _lastMs = now;
     sampleOnce();
   }

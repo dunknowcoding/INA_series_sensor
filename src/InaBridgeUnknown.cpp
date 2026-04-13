@@ -7,7 +7,8 @@ void InaBridgeUnknown::begin() {
 
 void InaBridgeUnknown::printInfo() {
   Serial.println(
-      "{\"v\":1,\"type\":\"INFO\",\"msg\":\"UNKNOWN stub bridge\",\"author\":\"NiusRobotLab\",\"chip\":\"UNKNOWN\"}");
+      "{\"v\":1,\"type\":\"INFO\",\"msg\":\"UNKNOWN stub bridge. No JSON samples until START (optional SR <Hz> "
+      "first).\",\"author\":\"NiusRobotLab\",\"chip\":\"UNKNOWN\"}");
 }
 
 void InaBridgeUnknown::sampleOnce() {
@@ -23,7 +24,7 @@ void InaBridgeUnknown::sampleOnce() {
 
 void InaBridgeUnknown::handleCommand(const String& line) {
   String l = line;
-  l.trim();
+  InaJsonl::normalizeCmd(l);
   if (l.length() == 0) return;
   if (l.equalsIgnoreCase("PING")) {
     InaJsonl::pong();
@@ -40,10 +41,7 @@ void InaBridgeUnknown::handleCommand(const String& line) {
     return;
   }
   if (l.startsWith("SR ")) {
-    int hz = l.substring(3).toInt();
-    if (hz < 1) hz = 1;
-    if (hz > 200) hz = 200;
-    _sampleHz = hz;
+    _sampleHz = InaJsonl::clampStreamRateI2c(l.substring(3).toInt());
     InaJsonl::ackSr(_sampleHz);
     return;
   }
@@ -54,9 +52,10 @@ void InaBridgeUnknown::tick() {
   if (Serial.available()) {
     handleCommand(Serial.readStringUntil('\n'));
   }
-  const uint32_t now = millis();
+  if (!_streaming) return;
   const uint32_t interval_ms = InaJsonl::sampleIntervalMs(_sampleHz);
-  if (_streaming && (now - _lastMs >= interval_ms)) {
+  const uint32_t now = millis();
+  if ((uint32_t)(now - _lastMs) >= interval_ms) {
     _lastMs = now;
     sampleOnce();
   }

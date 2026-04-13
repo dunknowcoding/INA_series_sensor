@@ -163,6 +163,26 @@ On **ESP32** / **RP2040**, the four pins map the bus. On **AVR**, use hardware S
 2. Adjust `**beginI2c(sda, scl)`** if your wiring differs from **8 / 9**.
 3. Upload; open Serial Monitor at **115200**.
 
+### ESP32-C3: no text in Serial Monitor?
+
+**CDC is already Enabled but still blank?** Common causes:
+
+- **Wrong COM port.** In Device Manager, the same board may register **two** COM numbers (e.g. one for **USB JTAG/serial**, one for a **CP210x/CH340** bridge). Open the monitor on **each** until text appears.
+- **Board type: native USB vs USB–UART bridge.** Many small **ESP32-C3 SuperMini** clones route `Serial` to an **external USB–serial chip** (CH340/CP2102). Then your data appears on **that** bridge’s COM port; the **USB CDC** menu mainly applies when the **C3 chip itself** is the USB device (one socket, no separate serial IC).
+- **Port busy.** Fully quit **INA Monitor**, PuTTY, other serial tools, then reopen Arduino Serial Monitor.
+- **Cable** with **charge-only** wires (no USB data).
+
+Upload **`examples/diag_serial_only`** (no I²C). If that sketch also prints nothing, the problem is **COM / cable / board USB path**, not the INA bridge.
+
+**`diag_serial_only` works but `ina219_bridge` prints nothing:** the MCU is probably **stuck inside I²C** (SDA/SCL shorted, module not powered, bus locked, or wrong pins). Library v0.2.8+ sets **`Wire.setTimeOut(100)`** on ESP32. **v0.2.9** replaces **repeated-START** reads (`endTransmission(false)` + `requestFrom`) with **write-pointer + STOP + read** — some ESP32 Arduino `Wire` stacks deadlock on repeated START when a real INA is connected, while a simple I²C scanner still passes. Update to **0.2.9**, re-upload **`ina219_bridge`**, and you should see **`INFO`** lines with the module wired.
+
+1. **Arduino IDE → Tools → USB CDC On Boot → `Enabled`.**
+   If this is **Disabled**, `Serial` often goes to the UART pins, **not** the USB connector — the IDE serial monitor will stay empty.
+2. Some boards expose **two COM ports**; try the other one if the first shows no output.
+3. After reset you should see the bridge **`INFO`** JSON (chip + addr), or an **`ERR`** if I²C cannot see the chip. If the port stays empty, run **`examples/diag_serial_only`** first. **Close INA Monitor** (or any app) if it has the COM port open — only one program can use the port at a time.
+4. **No continuous samples on boot** (same as v0.2.1): the bridge prints **one boot `INFO`** whose `msg` includes *no samples until `START`* (and usually **`SR <Hz>`** before **`START`**). Measurement JSON appears only after **`START`** — use **NiusRobotLab_INA_monitor** “Start”, or type **`START`** in Serial Monitor. (Older builds used a second `INFO` line; that was merged in **v0.2.11** to avoid USB CDC occasionally truncating the start of the second line after reset.)
+5. Bridge **`examples/*`** use a short **`delay(500)`** after **`Serial.begin`** so USB CDC can enumerate before I²C/SPI init.
+
 **I²C**
 
 ```cpp
@@ -172,7 +192,7 @@ static InaBridge228 g_bridge("INA228", 0x40);
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   g_bridge.beginI2c(8, 9);
 }
 
@@ -186,11 +206,11 @@ void loop() {
 ```cpp
 #include <INA_Series_Sensor.h>
 
-static InaBridge229Spi g_bridge("INA229", "TI INA229", 7, 4, 5, 6);
+static InaBridge229Spi g_bridge("INA229", "TI INA229");
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   g_bridge.beginSpi();
 }
 
@@ -258,7 +278,7 @@ Do **not** rename fields used by **NiusRobotLab_INA_monitor**: `**bus_V`**, `**s
 | `PING`         | `{"v":1,"type":"PONG"}`                       |
 | `START`        | Enable streaming                              |
 | `STOP`         | Disable streaming                             |
-| `SR <hz>`      | Sample rate **1–200** Hz                      |
+| `SR <hz>`      | Nominal sample rate: **I²C bridges 1–400 Hz**, **INA229 SPI bridge 1–2000 Hz** (use `micros()` interval in firmware) |
 | `IMAX <A>`     | Max current for calibration (where supported) |
 | `RSHUNT <ohm>` | Shunt resistance                              |
 
@@ -269,7 +289,7 @@ Unknown commands → `**ERR`** JSON. Some bridges omit `**IMAX**` (e.g. `InaBrid
 
 ## NiusRobotLab_INA_monitor (host UI)
 
-Use the **Serial** data source in **NiusRobotLab_INA_monitor** (the application window title / branding may show **INA Monitor**). Select the **same `chip` string** as in your sketch constructor, then start streaming. The host sends `**START` / `STOP` / `SR`** and calibration lines as needed.
+Use the **Serial** data source in **NiusRobotLab_INA_monitor** (the application window title / branding may show **INA Monitor**). Select the **same `chip` string** as in your sketch constructor, then start streaming. The host sends **`SR <hz>`** (sample rate) then **`START`** / **`STOP`** and calibration lines as needed; **`addr`** in JSON (`0x40` vs `SPI`) lets the UI pick allowed rates.
 
 **Desktop application source:** a public GitHub repository for **NiusRobotLab_INA_monitor** is not published yet; this README will add the link when it is available.
 

@@ -31,6 +31,7 @@ void InaBridge229Spi::beginSpi(uint32_t spiHz) {
   }
   applyResetAndMode();
   printInfo();
+  Serial.flush();
 }
 
 uint32_t InaBridge229Spi::spiReadRegister(uint8_t reg, uint8_t nbytes) {
@@ -96,7 +97,8 @@ void InaBridge229Spi::applyResetAndMode() {
 void InaBridge229Spi::printInfo() {
   char buf[300];
   snprintf(buf, sizeof(buf),
-           "{\"v\":1,\"type\":\"INFO\",\"msg\":\"%s bridge ready\",\"author\":\"NiusRobotLab\",\"chip\":\"%s\","
+           "{\"v\":1,\"type\":\"INFO\",\"msg\":\"%s bridge ready. No JSON samples until START (optional SR <Hz> "
+           "first).\",\"author\":\"NiusRobotLab\",\"chip\":\"%s\","
            "\"addr\":\"SPI\",\"ref\":\"%s\"}",
            _chip, _chip, _ref);
   Serial.println(buf);
@@ -137,7 +139,7 @@ void InaBridge229Spi::sampleOnce() {
 
 void InaBridge229Spi::handleCommand(const String& line) {
   String l = line;
-  l.trim();
+  InaJsonl::normalizeCmd(l);
   if (l.length() == 0) return;
   if (l.equalsIgnoreCase("PING")) {
     InaJsonl::pong();
@@ -154,10 +156,7 @@ void InaBridge229Spi::handleCommand(const String& line) {
     return;
   }
   if (l.startsWith("SR ")) {
-    int hz = l.substring(3).toInt();
-    if (hz < 1) hz = 1;
-    if (hz > 200) hz = 200;
-    _sampleHz = hz;
+    _sampleHz = InaJsonl::clampStreamRateSpi(l.substring(3).toInt());
     InaJsonl::ackSr(_sampleHz);
     return;
   }
@@ -184,10 +183,11 @@ void InaBridge229Spi::tick() {
   if (Serial.available()) {
     handleCommand(Serial.readStringUntil('\n'));
   }
-  const uint32_t now = millis();
-  const uint32_t interval_ms = InaJsonl::sampleIntervalMs(_sampleHz);
-  if (_streaming && (now - _lastMs >= interval_ms)) {
-    _lastMs = now;
+  if (!_streaming) return;
+  const uint32_t interval_us = InaJsonl::sampleIntervalMicros(_sampleHz);
+  const uint32_t now = micros();
+  if ((uint32_t)(now - _lastSampleUs) >= interval_us) {
+    _lastSampleUs = now;
     sampleOnce();
   }
 }

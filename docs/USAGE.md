@@ -143,9 +143,9 @@ Choose the class that matches your **device register map** and **bus**. The **fi
    - Reads a **line** from **`Serial`** if present and parses **commands** (`PING`, `START`, `STOP`, etc.).
    - If streaming is **on** and the sample interval has elapsed, emits one **measurement** JSON object.
 
-3. **Streaming is off** until the host sends **`START`** (or you add code to enable it — not done in stock examples). **NiusRobotLab_INA_monitor** sends **`START`** when you begin a capture session.
+3. **Streaming is off** until the host sends **`START`** (stock examples do **not** auto-stream on boot — same as older library versions). After reset you only see **`INFO`** lines until **`START`**; **NiusRobotLab_INA_monitor** sends **`SR`** then **`START`** when you click start monitoring.
 
-4. Default **nominal sample rate** is **10 Hz**, adjustable with **`SR <hz>`** (clamped **1–200** Hz in firmware).
+4. Default **nominal sample rate** is **10 Hz**, adjustable with **`SR <hz>`**. Firmware clamps to **1–400 Hz** on **I²C** bridges and **1–2000 Hz** on the **INA229 SPI** bridge; streaming uses a **`micros()`**-based interval so rates above ~1 kHz are not rounded away.
 
 ---
 
@@ -198,7 +198,7 @@ Send **ASCII lines** terminated by **newline** (`\n`). Matching is case-insensit
 | **`PING`** | Response: **`PONG`**. |
 | **`START`** | Enable streaming samples. |
 | **`STOP`** | Disable streaming. |
-| **`SR <hz>`** | Set nominal rate **1–200** Hz. |
+| **`SR <hz>`** | Set nominal rate (**I²C:** **1–400 Hz**; **INA229 SPI:** **1–2000 Hz**). |
 | **`IMAX <A>`** | Set expected max current for **Calibration** math (classes that implement it). Invalid/zero may reset to a default. |
 | **`RSHUNT <ohm>`** | Set shunt resistance. Must be **> 0** where implemented. |
 
@@ -213,7 +213,7 @@ Send **ASCII lines** terminated by **newline** (`\n`). Matching is case-insensit
 1. Connect the board via **USB** (virtual COM / CDC).
 2. Open **NiusRobotLab_INA_monitor**, choose the **Serial** data source and the **COM port** at **115200** baud.
 3. Select the **same chip name** as in your sketch’s **`chipJson`** string (e.g. **`INA238-Q1`**).
-4. Start monitoring — the app sends **`START`**, **`STOP`**, **`SR`**, and calibration commands as designed.
+4. Start monitoring — the app sends **`SR <hz>`** then **`START`**, plus **`STOP`** and calibration commands as designed.
 
 If the chip name in JSON does not match the UI selection, charts and scaling may not align with expectations.
 

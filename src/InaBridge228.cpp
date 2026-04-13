@@ -19,6 +19,10 @@ InaBridge228::InaBridge228(const char* chipJson, uint8_t i2cAddr, const char* re
 
 void InaBridge228::beginI2c(int pinSda, int pinScl, uint32_t i2cHz) {
   InaWireBeginMapped(pinSda, pinScl, i2cHz);
+  if (!InaWireProbeAddr(_addr)) {
+    InaWireReportProbeFailure(_addr);
+    return;
+  }
   if (!detectChip()) {
     char e[160];
     snprintf(e, sizeof(e),
@@ -28,14 +32,11 @@ void InaBridge228::beginI2c(int pinSda, int pinScl, uint32_t i2cHz) {
   }
   applyResetAndMode();
   printInfo();
+  Serial.flush();
 }
 
 uint16_t InaBridge228::readU16(uint8_t reg) {
-  Wire.beginTransmission(_addr);
-  Wire.write(reg);
-  if (Wire.endTransmission(false) != 0) return 0;
-  if (Wire.requestFrom((int)_addr, 2) != 2) return 0;
-  return ((uint16_t)Wire.read() << 8) | (uint16_t)Wire.read();
+  return InaWireReadU16Reg(_addr, reg);
 }
 
 void InaBridge228::writeU16(uint8_t reg, uint16_t val) {
@@ -47,15 +48,7 @@ void InaBridge228::writeU16(uint8_t reg, uint16_t val) {
 }
 
 uint32_t InaBridge228::readU24(uint8_t reg) {
-  Wire.beginTransmission(_addr);
-  Wire.write(reg);
-  if (Wire.endTransmission(false) != 0) return 0;
-  if (Wire.requestFrom((int)_addr, 3) != 3) return 0;
-  uint32_t v = 0;
-  for (int i = 0; i < 3; i++) {
-    v = (v << 8) | (uint32_t)Wire.read();
-  }
-  return v;
+  return InaWireReadU24RegMsbFirst(_addr, reg);
 }
 
 void InaBridge228::applyShuntCalibration() {
@@ -89,7 +82,8 @@ void InaBridge228::printInfo() {
   snprintf(addrStr, sizeof(addrStr), "0x%02X", _addr);
   char buf[280];
   snprintf(buf, sizeof(buf),
-           "{\"v\":1,\"type\":\"INFO\",\"msg\":\"%s bridge ready\",\"author\":\"NiusRobotLab\",\"chip\":\"%s\","
+           "{\"v\":1,\"type\":\"INFO\",\"msg\":\"%s bridge ready. No JSON samples until START (optional SR <Hz> "
+           "first).\",\"author\":\"NiusRobotLab\",\"chip\":\"%s\","
            "\"addr\":\"%s\",\"ref\":\"%s\"}",
            _chip, _chip, addrStr, _ref);
   Serial.println(buf);
@@ -134,7 +128,7 @@ void InaBridge228::sampleOnce() {
 
 void InaBridge228::handleCommand(const String& line) {
   String l = line;
-  l.trim();
+  InaJsonl::normalizeCmd(l);
   if (l.length() == 0) return;
   if (l.equalsIgnoreCase("PING")) {
     InaJsonl::pong();
@@ -151,10 +145,7 @@ void InaBridge228::handleCommand(const String& line) {
     return;
   }
   if (l.startsWith("SR ")) {
-    int hz = l.substring(3).toInt();
-    if (hz < 1) hz = 1;
-    if (hz > 200) hz = 200;
-    _sampleHz = hz;
+    _sampleHz = InaJsonl::clampStreamRateI2c(l.substring(3).toInt());
     InaJsonl::ackSr(_sampleHz);
     return;
   }
@@ -181,9 +172,10 @@ void InaBridge228::tick() {
   if (Serial.available()) {
     handleCommand(Serial.readStringUntil('\n'));
   }
-  const uint32_t now = millis();
+  if (!_streaming) return;
   const uint32_t interval_ms = InaJsonl::sampleIntervalMs(_sampleHz);
-  if (_streaming && (now - _lastMs >= interval_ms)) {
+  const uint32_t now = millis();
+  if ((uint32_t)(now - _lastMs) >= interval_ms) {
     _lastMs = now;
     sampleOnce();
   }

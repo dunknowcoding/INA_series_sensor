@@ -1,5 +1,5 @@
 /**
- * Rewrites each examples subfolder ino to use INA_Series_Sensor library classes.
+ * Rewrites each examples subfolder .ino to use INA_Series_Sensor bridge classes.
  * Run: node scripts/wire-examples-library.mjs
  */
 import fs from "fs";
@@ -40,11 +40,11 @@ const SPECS = [
   { dir: "unknown_bridge", file: "unknown_bridge.ino", cls: "InaBridgeUnknown", args: "", hdr: "UNKNOWN" }
 ];
 
-function inoI2c(cls, varName, args, title, fileName) {
+function inoI2c(cls, varName, args, title) {
   return `/**
- * @file ${fileName}
- * @brief ${title} — JSONL bridge using library class (see INA_Series_Sensor).
- * ESP32-C3 SuperMini: GPIO8=SDA, GPIO9=SCL, 3V3/GND. USB 115200.
+ * ${title} JSONL bridge (I²C). ESP32-C3: SDA=8 SCL=9, 115200. See README if Serial is empty.
+ * Serial @115200: send START (newline) to stream JSON measurement lines; send STOP to stop.
+ * Optional before START: SR <Hz> for nominal rate (INA Monitor).
  */
 #include <INA_Series_Sensor.h>
 
@@ -52,7 +52,7 @@ static ${cls} ${varName}(${args});
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   ${varName}.beginI2c(8, 9);
 }
 
@@ -62,11 +62,11 @@ void loop() {
 `;
 }
 
-function inoSpi229(title, chip, ref) {
+function inoSpi229(chip, ref) {
   return `/**
- * @file ${title}_bridge.ino
- * @brief ${chip} — SPI JSONL bridge (library InaBridge229Spi).
- * ESP32-C3: GPIO4=SCK, 5=MISO, 6=MOSI, 7=CS. USB 115200.
+ * ${chip} JSONL bridge (SPI). ESP32-C3: SCK=4 MISO=5 MOSI=6 CS=7, 115200.
+ * Serial @115200: send START (newline) to stream JSON measurement lines; send STOP to stop.
+ * Optional before START: SR <Hz> for nominal rate (INA Monitor).
  */
 #include <INA_Series_Sensor.h>
 
@@ -74,7 +74,7 @@ static InaBridge229Spi g_bridge("${chip}", "${ref}");
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   g_bridge.beginSpi();
 }
 
@@ -86,8 +86,9 @@ void loop() {
 
 function inoUnknown() {
   return `/**
- * @file unknown_bridge.ino
- * @brief UNKNOWN chip placeholder (InaBridgeUnknown).
+ * UNKNOWN stub (no bus). 115200 — use to verify USB serial only.
+ * Serial @115200: send START (newline) to stream JSON measurement lines; send STOP to stop.
+ * Optional before START: SR <Hz> for nominal rate (INA Monitor).
  */
 #include <INA_Series_Sensor.h>
 
@@ -95,7 +96,7 @@ static InaBridgeUnknown g_bridge;
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   g_bridge.begin();
 }
 
@@ -108,10 +109,10 @@ void loop() {
 for (const s of SPECS) {
   const p = path.join(EXAMPLES, s.dir, s.file);
   let body;
-  if (s.cls === "SPI229") body = inoSpi229("ina229", "INA229", "TI INA229");
-  else if (s.cls === "SPI229Q1") body = inoSpi229("ina229_q1", "INA229-Q1", "TI INA229-Q1");
+  if (s.cls === "SPI229") body = inoSpi229("INA229", "TI INA229");
+  else if (s.cls === "SPI229Q1") body = inoSpi229("INA229-Q1", "TI INA229-Q1");
   else if (s.cls === "InaBridgeUnknown") body = inoUnknown();
-  else body = inoI2c(s.cls, "g_bridge", s.args, s.hdr, s.file);
+  else body = inoI2c(s.cls, "g_bridge", s.args, s.hdr);
   fs.writeFileSync(p, body, "utf8");
   console.log("wrote", p);
 }

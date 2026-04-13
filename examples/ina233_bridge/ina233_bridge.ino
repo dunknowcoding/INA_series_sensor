@@ -1,7 +1,7 @@
 /**
- * @file ina233_bridge.ino
- * @brief INA233 — JSONL bridge using library class (see INA_Series_Sensor).
- * ESP32-C3 SuperMini: GPIO8=SDA, GPIO9=SCL, 3V3/GND. USB 115200.
+ * INA233 JSONL bridge (I²C). ESP32-C3: SDA=8 SCL=9, 115200. See README if Serial is empty.
+ * Serial @115200: send START (newline) to stream JSON measurement lines; send STOP to stop.
+ * Optional before START: SR <Hz> for nominal rate (INA Monitor).
  */
 #include <INA_Series_Sensor.h>
 
@@ -9,7 +9,7 @@ static InaBridge226 g_bridge("INA233", 0x40, "TI SLYSF02 (INA233)");
 
 void setup() {
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   g_bridge.beginI2c(8, 9);
 }
 
