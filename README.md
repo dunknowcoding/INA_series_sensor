@@ -11,8 +11,8 @@
 <p align="center">
   <a href="#supported-chips">26 chips</a> ·
   <a href="#features">Two modes</a> ·
-  <a href="docs/API.md">API Reference</a> ·
-  <a href="docs/USAGE.md">User Guide</a> ·
+  <a href="docs/API_EN.md">API Reference</a> · <a href="docs/API_CHN.md">API 参考手册</a> ·
+  <a href="docs/USAGE_EN.md">User Guide</a> · <a href="docs/USAGE_CHN.md">使用指南</a> ·
   <a href="https://github.com/dunknowcoding/NiusRobotLab_INA_monitor">INA Monitor Tool</a>
 </p>
 
@@ -146,8 +146,10 @@ void loop() {
 
 | Document | Description |
 |---|---|
-| **[API Reference](docs/API.md)** | Complete API for all Bridge classes — parameters, return values, usage examples |
-| **[User Guide](docs/USAGE.md)** | Wiring diagrams, commercial module compatibility, INA Monitor setup, standalone usage |
+| **[API Reference (EN)](docs/API_EN.md)** | Complete API for all Bridge classes — parameters, return values, usage examples |
+| **[API 参考手册 (中文)](docs/API_CHN.md)** | 完整 API 参考 — 参数、返回值、使用示例 |
+| **[User Guide (EN)](docs/USAGE_EN.md)** | Wiring diagrams, commercial module compatibility, INA Monitor setup, standalone usage |
+| **[使用指南 (中文)](docs/USAGE_CHN.md)** | 接线说明、商用模块兼容性、INA Monitor 设置、独立使用指南 |
 
 ## Project Structure
 
@@ -175,8 +177,10 @@ INA_series_sensor/
 │       └── ...
 ├── examples/                        # 69 ready-to-flash examples
 └── docs/
-    ├── API.md                       # Complete API reference
-    └── USAGE.md                     # User guide & wiring
+    ├── API_EN.md                    # API reference (English)
+    ├── API_CHN.md                   # API 参考手册 (中文)
+    ├── USAGE_EN.md                  # User guide (English)
+    └── USAGE_CHN.md                 # 使用指南 (中文)
 ```
 
 ## License

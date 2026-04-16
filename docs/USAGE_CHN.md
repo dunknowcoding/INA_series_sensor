@@ -1043,6 +1043,6 @@ void loop() {
 
 ---
 
-> **更多信息：** 完整 API 参考请查阅 [API Reference](API.md)  
+> **更多信息：** 完整 API 参考请查阅 [API 参考手册 (中文)](API_CHN.md) | [API Reference (EN)](API_EN.md)  
 > **INA Monitor 工具：** [NiusRobotLab_INA_monitor](https://github.com/dunknowcoding/NiusRobotLab_INA_monitor)  
 > **问题反馈：** [GitHub Issues](https://github.com/dunknowcoding/INA_series_sensor/issues)
