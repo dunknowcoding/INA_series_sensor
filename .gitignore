@@ -17,5 +17,6 @@ reports/
 .build-matrix/
 .build-cache/
 
-# Node (scripts only, not part of the library)
+# Dev scripts & Node (not part of the library)
+scripts/
 node_modules/
