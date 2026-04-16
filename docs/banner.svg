@@ -1,52 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" width="1200" height="280">
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="200" viewBox="0 0 920 200" role="img" aria-label="INA Series Sensor">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="280" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#050a14"/>
-      <stop offset="0.5" stop-color="#0a1a32"/>
-      <stop offset="1" stop-color="#0d2847"/>
-    </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0066FF" stop-opacity="0"/>
-      <stop offset="0.5" stop-color="#0066FF" stop-opacity="0.45"/>
-      <stop offset="1" stop-color="#0066FF" stop-opacity="0"/>
-    </linearGradient>
-    <linearGradient id="bar" x1="56" y1="96" x2="56" y2="184" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#3399FF"/>
-      <stop offset="1" stop-color="#0066FF"/>
-    </linearGradient>
-    <linearGradient id="chip" x1="780" y1="88" x2="920" y2="192" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#1a4a99"/>
-      <stop offset="1" stop-color="#0066FF"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e3a5f"/>
     </linearGradient>
   </defs>
-
-  <rect width="1200" height="280" fill="url(#bg)"/>
-  <rect x="0" y="0" width="1200" height="3" fill="url(#glow)"/>
-
-  <ellipse cx="150" cy="240" rx="220" ry="100" fill="#0066FF" opacity="0.08"/>
-  <ellipse cx="1050" cy="50" rx="140" ry="90" fill="#3399FF" opacity="0.07"/>
-
-  <g opacity="0.1" stroke="#0066FF" stroke-width="0.5" fill="none">
-    <path d="M0,70 L1200,70 M0,140 L1200,140 M0,210 L1200,210"/>
-    <path d="M150,0 L150,280 M300,0 L300,280 M450,0 L450,280 M600,0 L600,280 M750,0 L750,280 M900,0 L900,280 M1050,0 L1050,280"/>
-  </g>
-
-  <rect x="780" y="88" width="140" height="104" rx="8" fill="none" stroke="url(#chip)" stroke-width="2" opacity="0.85"/>
-  <path d="M800,88 L800,72 M830,88 L830,72 M860,88 L860,72 M890,88 L890,72" stroke="#3399FF" stroke-width="2" opacity="0.6" fill="none"/>
-  <path d="M800,192 L800,208 M830,192 L830,208 M860,192 L860,208 M890,192 L890,208" stroke="#3399FF" stroke-width="2" opacity="0.6" fill="none"/>
-
-  <path d="M960,150 Q990,90 1020,150 T1080,120 T1140,150" stroke="#0066FF" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
-  <circle cx="1140" cy="150" r="5" fill="#3399FF"/>
-
-  <text x="700" y="168" fill="#66aaff" font-family="Arial,Helvetica,sans-serif" font-size="48" font-weight="700">{</text>
-  <text x="1120" y="168" fill="#66aaff" font-family="Arial,Helvetica,sans-serif" font-size="48" font-weight="700">}</text>
-
-  <rect x="56" y="96" width="5" height="88" rx="2" fill="url(#bar)"/>
-
-  <text x="76" y="148" fill="#e8f2ff" font-family="Arial,Helvetica,sans-serif" font-size="44" font-weight="700">INA Series Sensor</text>
-  <text x="76" y="188" fill="#88bbff" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="500">JSON Lines - INA Monitor - Arduino / ESP32 / RP2040</text>
-
-  <rect x="76" y="204" width="112" height="32" rx="16" fill="#0066FF" fill-opacity="0.22" stroke="#3399FF" stroke-width="1"/>
-  <text x="132" y="225" fill="#c8e0ff" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="600" text-anchor="middle">v0.2.5</text>
+  <rect width="920" height="200" rx="12" fill="url(#bg)"/>
+  <text x="48" y="92" fill="#e2e8f0" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="36" font-weight="600">INA Series Sensor</text>
+  <text x="48" y="138" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="17">TI INA current &amp; power monitors · Arduino / ESP32 / RP2040 · JSON Lines bridge</text>
+  <rect x="48" y="158" width="120" height="4" rx="2" fill="#38bdf8"/>
 </svg>

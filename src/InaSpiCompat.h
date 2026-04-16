@@ -13,7 +13,7 @@ inline void InaSpiBeginMapped(int cs, int sck, int miso, int mosi) {
   digitalWrite(cs, HIGH);
 #if defined(ARDUINO_ARCH_ESP32)
   SPI.begin(sck, miso, mosi, cs);
-#elif defined(ARDUINO_ARCH_RP2040)
+#elif defined(ARDUINO_ARCH_RP2040) && !defined(ARDUINO_ARCH_MBED)
   SPI.setRX(miso);
   SPI.setTX(mosi);
   SPI.setSCK(sck);

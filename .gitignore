@@ -1,7 +1,21 @@
+# OS
 .DS_Store
 Thumbs.db
+Desktop.ini
+
+# Editors
 *.bak
 *.swp
 *~
 .vscode/
 .idea/
+
+# Build artifacts
+.build/
+build/
+reports/
+.build-matrix/
+.build-cache/
+
+# Node (scripts only, not part of the library)
+node_modules/

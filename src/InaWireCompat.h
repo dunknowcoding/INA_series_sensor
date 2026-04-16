@@ -10,17 +10,19 @@
 #include <stddef.h>
 
 /**
- * Start I2C at @p i2cHz. On ESP32 and RP2040 (Arduino-Pico), @p pinSda and @p pinScl select the bus pins.
- * On other architectures (e.g. AVR ATmega328 Uno/Nano), pins are ignored and the core uses the
- * board default I2C pins (hardware SDA/SCL).
+ * Start I2C at @p i2cHz.
+ *
+ * Notes by core:
+ * - ESP32 Arduino: Wire.begin(sda,scl) is supported.
+ * - RP2040/RP2350: pin-mapped I2C is core-specific; many cores only support Wire.begin() with fixed pins
+ *   (or require using a specific Wire instance). To keep examples portable, we fall back to Wire.begin().
+ * - AVR/SAMD/megaAVR: pins are fixed by the board definition; arguments are ignored.
  */
 inline void InaWireBeginMapped(int pinSda, int pinScl, uint32_t i2cHz) {
 #if defined(ARDUINO_ARCH_ESP32)
   Wire.begin(pinSda, pinScl);
   /* Stuck SDA/SCL (short, missing pull-ups, bad module) otherwise can block forever. */
   Wire.setTimeOut(100);
-#elif defined(ARDUINO_ARCH_RP2040)
-  Wire.begin(pinSda, pinScl);
 #else
   (void)pinSda;
   (void)pinScl;
@@ -58,6 +60,13 @@ inline uint32_t InaWireReadU24RegMsbFirst(uint8_t addr7, uint8_t reg) {
   uint8_t b[3];
   if (InaWireReadRegister(addr7, reg, b, 3) != 3) return 0;
   return ((uint32_t)b[0] << 16) | ((uint32_t)b[1] << 8) | (uint32_t)b[2];
+}
+
+inline uint64_t InaWireReadU40RegMsbFirst(uint8_t addr7, uint8_t reg) {
+  uint8_t b[5];
+  if (InaWireReadRegister(addr7, reg, b, 5) != 5) return 0;
+  return ((uint64_t)b[0] << 32) | ((uint64_t)b[1] << 24) |
+         ((uint64_t)b[2] << 16) | ((uint64_t)b[3] << 8) | (uint64_t)b[4];
 }
 
 /** Quick I2C presence check (7-bit @p addr). Call after InaWireBeginMapped. */
