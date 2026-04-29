@@ -2,7 +2,17 @@
 
 All notable changes to the **INA Series Sensor** library are documented here.
 
-## [0.5.0] — 2026-04-16
+## [0.5.2] - 2026-04-29
+
+### Fixed
+
+- **INA226-family Vbus scaling bug** in InaBridge226: bus-voltage readings for **INA226 / INA226-Q1 / INA230 / INA231 / INA232 / INA233 / INA234 / INA236** were incorrectly shifted right by 3 bits, causing the reported voltage to be **1/8 of the real value** in NiusRobotLab_INA_monitor. The conversion now uses the correct **1.25 mV / LSB** formula directly from the REG_BUS_V register.
+
+### Changed
+
+- Bumped library version metadata to **0.5.2**.
+- Updated documentation version markers to match **0.5.2**.
+## [0.5.0] - 2026-04-16
 
 ### Added
 

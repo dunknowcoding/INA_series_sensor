@@ -81,7 +81,7 @@ void InaBridge226::printInfo() {
 
 float InaBridge226::readBusVoltage() {
   const uint16_t raw = readU16(REG_BUS_V);
-  return (float)((raw >> 3) & 0x1FFF) * 0.00125f;
+  return (float)raw * 0.00125f;
 }
 
 float InaBridge226::readShuntVoltage() {
@@ -132,7 +132,7 @@ void InaBridge226::emitJsonSample() {
   const int16_t current_raw = readS16(REG_CURRENT);
   const uint16_t power_raw = readU16(REG_POWER);
   const float shunt_uV = (float)shunt_raw * 2.5f;
-  const float bus_V = (float)((bus_raw >> 3) & 0x1FFF) * 0.00125f;
+  const float bus_V = (float)bus_raw * 0.00125f;
   const float current_LSB = _imaxA / 32768.0f;
   const float current_A = (float)current_raw * current_LSB;
   const float power_LSB = 25.0f * current_LSB;
