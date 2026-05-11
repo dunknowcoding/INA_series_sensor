@@ -8,8 +8,9 @@
  * @brief CH1-only sensor driver for INA2227 / INA4230 / INA4235 with
  *        optional JSONL serial streaming.
  *
- * Simple two-register path: shunt voltage at 0x01 (signed 16-bit,
- * LSB = 40 µV) and bus voltage at 0x02 ((raw >> 3) & 0x1FFF, LSB = 8 mV).
+ * Simple two-register path: shunt voltage at 0x01 (signed field in bits
+ * [15:3], LSB = 40 µV) and bus voltage at 0x02 ((raw >> 3) & 0x1FFF,
+ * LSB = 8 mV).
  * Current is computed in software: shuntV / Rshunt.
  *
  * Two usage modes — can be combined:

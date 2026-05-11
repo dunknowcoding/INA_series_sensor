@@ -2,6 +2,17 @@
 
 All notable changes to the **INA Series Sensor** library are documented here.
 
+## [0.5.3] - 2026-05-11
+
+### Fixed
+
+- **INA3221-family current scaling bug** in InaBridge3221 and InaBridgeCh1: shunt-voltage registers were decoded as full 16-bit signed values instead of signed measurement fields stored in bits [15:3], which made computed current too large. Current and power calculations are now correctly scaled for **INA3221 / INA3221-Q1 / INA2227 / INA4230 / INA4235**.
+
+### Changed
+
+- Bumped library version metadata to **0.5.3**.
+- Updated usage-guide version markers to match **0.5.3**.
+
 ## [0.5.2] - 2026-04-29
 
 ### Fixed

@@ -1,7 +1,7 @@
 # INA Series Sensor — User Guide
 
 > **Target audience:** Beginners and intermediate users  
-> **Library version:** 0.5.2+  
+> **Library version:** 0.5.3+  
 > **GitHub:** [dunknowcoding/INA_series_sensor](https://github.com/dunknowcoding/INA_series_sensor)
 
 ---

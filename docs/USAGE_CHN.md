@@ -1,7 +1,7 @@
 # INA Series Sensor — 使用指南
 
 > **适用对象：** 初学者与中级用户  
-> **库版本：** 0.5.2+  
+> **库版本：** 0.5.3+  
 > **GitHub：** [dunknowcoding/INA_series_sensor](https://github.com/dunknowcoding/INA_series_sensor)
 
 ---

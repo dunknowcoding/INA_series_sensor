@@ -44,7 +44,10 @@ void InaBridgeCh1::writeU16(uint8_t reg, uint16_t val) {
 // ── Register → physical conversion ──────────────────────────────
 
 float InaBridgeCh1::shuntRegToVolts(int16_t raw) {
-  return (float)raw * 40.0e-6f;
+  uint16_t reg = (uint16_t)raw;
+  int16_t steps = (int16_t)(reg >> 3);
+  if ((steps & 0x1000) != 0) steps |= (int16_t)0xE000;
+  return (float)steps * 40.0e-6f;
 }
 
 float InaBridgeCh1::busRegToVolts(uint16_t raw) {
