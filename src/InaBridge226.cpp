@@ -3,7 +3,7 @@
 #include "InaWireCompat.h"
 #include "ina/Ina226Driver.h"
 #include <stdio.h>
-#include <math.h>
+#include "InaMathCompat.h"
 
 // INA226 register addresses
 static const uint8_t REG_CONFIG      = 0x00;

@@ -2,6 +2,23 @@
 
 All notable changes to the **INA Series Sensor** library are documented here.
 
+## [0.5.4] - 2026-06-22
+
+### Added
+
+- **Nordic nRF52 / nRF53 support** for ArduinoNRF, Adafruit nRF52 BSP, Mbed Nano 33 BLE, and nRF5340 application cores.
+- **`InaBoardCompat.h`** — board-package detection and `INA_WIRE_SUPPORTS_PIN_REMAP` for portable I2C setup.
+- **`InaMathCompat.h`** — safe `<math.h>` include on cores that define `min`/`max` macros (Nordic, etc.).
+
+### Changed
+
+- **`InaWireBeginMapped()`** now remaps SDA/SCL on all Nordic targets that expose `Wire.begin(sda, scl)`, not only ArduinoNRF.
+- README / library metadata updated with Nordic platform compatibility notes.
+
+### Fixed
+
+- Compile failures on Nordic cores caused by Arduino `min`/`max` macros breaking standard C++ math headers.
+
 ## [0.5.3] - 2026-05-11
 
 ### Fixed

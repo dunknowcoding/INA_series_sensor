@@ -783,13 +783,15 @@ void setup() {
 
 ## 6. Notes and FAQ
 
-### 6.1 ESP32 GPIO Remapping
+### 6.1 I²C pin remapping (ESP32 & Nordic)
 
-The pin parameters in `begin(SDA_pin, SCL_pin)` are **only effective on the ESP32 family**.
+The pin parameters in `begin(SDA_pin, SCL_pin)` are **effective on ESP32 and Nordic nRF52/nRF53 Arduino cores** that expose `Wire.begin(sda, scl)`.
 
 - **ESP32 / ESP32-S3 / ESP32-C3:** You can freely specify the GPIO numbers for SDA and SCL
+- **ArduinoNRF nRF52** (ProMicro, SuperMini, XIAO, …): Use board silk `D*` pin numbers (e.g. ProMicro default I²C is D6/D7)
+- **Adafruit nRF52 / Mbed Nano 33 BLE / nRF5340:** Pin remap when the core supports it; otherwise the board default `Wire` pins are used
 - **Arduino AVR (Uno / Mega / Nano):** Pin parameters are ignored; the board's default I²C pins are used (Uno: SDA=A4, SCL=A5)
-- **RP2040 / SAMD / STM32:** Uses the board's default pins
+- **RP2040 / SAMD / STM32:** Uses the board's default pins unless the core exposes pin-mapped `Wire.begin()`
 
 ### 6.2 Serial Baud Rate
 

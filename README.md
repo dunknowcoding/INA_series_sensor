@@ -24,7 +24,7 @@
 |---|---|
 | **Broad chip coverage** | INA219, INA220, INA226, INA228, INA229 (SPI), INA230–239, INA740X, INA3221, INA2227, INA4230, INA4235 — including Q1 automotive variants |
 | **Two usage modes** | **JSONL streaming** for the [NiusRobotLab_INA_monitor](https://github.com/dunknowcoding/NiusRobotLab_INA_monitor) desktop tool, **or** standalone direct-read API for your own code — both can be combined |
-| **Multi-platform** | Arduino AVR, ESP32 / ESP8266, RP2040 / RP2350, SAMD, STM32, megaAVR, Renesas — `architectures=*` |
+| **Multi-platform** | Arduino AVR, ESP32 / ESP8266, RP2040 / RP2350, SAMD, STM32, megaAVR, Renesas, ArduinoNRF nRF52, Adafruit / Mbed Nordic nRF52/nRF53 — `architectures=*` |
 | **Per-channel control** | INA3221 triple-channel: independent shunt resistor, enable/disable, per-channel reading |
 | **Advanced sensing** | INA228/229: die temperature, energy accumulation, charge accumulation |
 | **69 ready-to-flash examples** | Basic, advanced (temperature/energy), and alert-interrupt examples for every supported chip |
@@ -141,6 +141,9 @@ void loop() {
 | STM32 (Nucleo) | ✅ Compatible | — |
 | megaAVR (Nano Every) | ✅ Compatible | — |
 | Renesas RA (UNO R4) | ✅ Compatible | — |
+| ArduinoNRF nRF52 (ProMicro, SuperMini, XIAO, …) | ✅ Verified (compile) | `begin(SDA, SCL)` pin remap; 3.3 V I2C |
+| Adafruit nRF52 / Mbed Nano 33 BLE | ✅ Compatible | Feather, Nano 33 BLE; default `Wire` pins when remap unsupported |
+| Nordic nRF5340 (application core) | ✅ Compatible (compile) | Same I2C API; verify pins on your board package |
 
 ## Documentation
 
@@ -167,6 +170,8 @@ INA_series_sensor/
 │   ├── InaJsonlProtocol.h           # JSONL serial protocol helpers
 │   ├── InaSerialLineReader.h        # Non-blocking serial line reader
 │   ├── InaWireCompat.h              # Portable I²C helpers
+│   ├── InaBoardCompat.h             # Nordic nRF52/nRF53 board detection
+│   ├── InaMathCompat.h              # Safe <math.h> on min/max macro cores
 │   ├── InaSpiCompat.h               # SPI pin mapping helpers
 │   └── ina/                         # Low-level driver layer
 │       ├── Ina219Driver.h/.cpp      # INA219 alert driver

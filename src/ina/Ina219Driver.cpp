@@ -2,7 +2,7 @@
  * @file Ina219Driver.cpp
  */
 #include "Ina219Driver.h"
-#include <math.h>
+#include "InaMathCompat.h"
 
 namespace Ina {
 

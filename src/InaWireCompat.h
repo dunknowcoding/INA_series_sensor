@@ -1,6 +1,6 @@
 /**
  * @file InaWireCompat.h
- * @brief Portable I2C (Wire) initialization for ESP32, RP2040 (Pico), and boards with fixed I2C pins.
+ * @brief Portable I2C (Wire) initialization for ESP32, Nordic nRF52/nRF53, RP2040, and fixed-pin boards.
  */
 #pragma once
 
@@ -9,20 +9,25 @@
 #include <stdio.h>
 #include <stddef.h>
 
+#include "InaBoardCompat.h"
+
 /**
  * Start I2C at @p i2cHz.
  *
  * Notes by core:
  * - ESP32 Arduino: Wire.begin(sda,scl) is supported.
+ * - ArduinoNRF, Adafruit nRF52, Mbed Nano 33 BLE, nRF5340: Wire.begin(sda,scl) is supported.
  * - RP2040/RP2350: pin-mapped I2C is core-specific; many cores only support Wire.begin() with fixed pins
  *   (or require using a specific Wire instance). To keep examples portable, we fall back to Wire.begin().
  * - AVR/SAMD/megaAVR: pins are fixed by the board definition; arguments are ignored.
  */
 inline void InaWireBeginMapped(int pinSda, int pinScl, uint32_t i2cHz) {
+#if INA_WIRE_SUPPORTS_PIN_REMAP
+  Wire.begin((uint8_t)pinSda, (uint8_t)pinScl);
 #if defined(ARDUINO_ARCH_ESP32)
-  Wire.begin(pinSda, pinScl);
   /* Stuck SDA/SCL (short, missing pull-ups, bad module) otherwise can block forever. */
   Wire.setTimeOut(100);
+#endif
 #else
   (void)pinSda;
   (void)pinScl;
